@@ -1,5 +1,9 @@
 # Hacker Game Suite — AI110 Final Project
 
+## Final Project Video Demo
+
+https://drive.google.com/file/d/1QN_ojP9c3ifsHOlC056mbgH9jbIXv1A_/view?usp=sharing
+
 ## Project Context (for AI assistants and collaborators)
 
 ## Video Demo Link: [TBD — add Google Drive share link here]
