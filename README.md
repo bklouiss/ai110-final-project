@@ -100,14 +100,22 @@ pip install -r requirements.txt
 
 ### 4. Configure your API key
 
-Add your Anthropic API key and admin password to `.env.local` at the project root:
+Copy `.env.example` to `.env.local` and fill in your values:
 
-```
-ANTHROPIC_API_KEY=your_api_key_here
-ADMIN_PASSWORD=your_admin_password_here
+```bash
+# macOS / Linux
+cp .env.example .env.local
+
+# Windows
+copy .env.example .env.local
 ```
 
-This file is gitignored and never committed. The AI Solver and hint buttons require the API key. Both games are fully playable without it — AI features simply show a "no key configured" message.
+Then open `.env.local` and replace the placeholder values:
+
+- `ANTHROPIC_API_KEY` — your key from [console.anthropic.com](https://console.anthropic.com/)
+- `ADMIN_PASSWORD` — any string you choose for the debug panel
+
+`.env.local` is gitignored and never committed. AI Solver and hint features require the API key; both games are fully playable without it — AI features show a "no key configured" message when the key is absent.
 
 ### 5. Run the application
 
@@ -294,7 +302,8 @@ ai110-final-project/
 ├── ai_solver.py                # Agentic loop solver: Claude tool-use for both games
 ├── debug_panel.py              # Admin debug panel
 ├── requirements.txt
-├── .env.local                  # ANTHROPIC_API_KEY + ADMIN_PASSWORD (not committed)
+├── .env.example                # Template — copy to .env.local and fill in your values
+├── .env.local                  # ANTHROPIC_API_KEY + ADMIN_PASSWORD (gitignored, not committed)
 ├── .gitignore
 │
 ├── .streamlit/
