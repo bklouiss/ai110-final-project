@@ -1,19 +1,17 @@
 # Hacker Game Suite — AI110 Final Project
 
-## Final Project Video Demo
+## Video Demo
 
 https://drive.google.com/file/d/1QN_ojP9c3ifsHOlC056mbgH9jbIXv1A_/view?usp=sharing
 
 ## Project Context (for AI assistants and collaborators)
 
-## Video Demo Link: [TBD — add Google Drive share link here]
-
 This is the final project for the AI110 course. It extends the **Game Glitch Investigator** (Module 1 starter) into a two-game Streamlit application with an AI hint engine, optimal AI solver, hacker terminal aesthetic, and an admin debug panel. The developer works between the terminal (Claude Code CLI) and VSCode (Claude Code extension). This README is the primary context file — read it in full before suggesting changes or implementations.
 
-**Tech stack:** Python 3.11+, Anthropic Claude API, Streamlit, pytest  
+**Tech stack:** Python 3.11+, Anthropic Claude API, Streamlit, python-dotenv, pytest  
 **Entry point:** `app.py` (Streamlit UI)  
 **Key modules:** `logic_utils.py`, `codebreaker_logic.py`, `ai_hints.py`, `ai_solver.py`, `debug_panel.py`  
-**Environment variable required:** `ANTHROPIC_API_KEY` in `.env` or Streamlit secrets
+**Environment variable required:** `ANTHROPIC_API_KEY` in `.env.local`
 
 ---
 
@@ -102,19 +100,14 @@ pip install -r requirements.txt
 
 ### 4. Configure your API key
 
-Create a `.env` file at the project root:
+Add your Anthropic API key and admin password to `.env.local` at the project root:
 
 ```
 ANTHROPIC_API_KEY=your_api_key_here
+ADMIN_PASSWORD=your_admin_password_here
 ```
 
-Or add it to `.streamlit/secrets.toml`:
-
-```toml
-ANTHROPIC_API_KEY = "your_api_key_here"
-```
-
-The AI Solver and hint buttons require this key. Both games are fully playable without it — AI features simply show a "no key configured" message.
+This file is gitignored and never committed. The AI Solver and hint buttons require the API key. Both games are fully playable without it — AI features simply show a "no key configured" message.
 
 ### 5. Run the application
 
@@ -297,18 +290,19 @@ ai110-final-project/
 ├── app.py                      # Streamlit UI — routing, CSS, all pages
 ├── logic_utils.py              # Number Guesser pure logic
 ├── codebreaker_logic.py        # Code Breaker pure logic
-├── ai_hints.py                 # Claude API: per-game hints
-├── ai_solver.py                # Claude API: step-by-step solver for both games
+├── ai_hints.py                 # RAG hint engine: TF-IDF retrieval + Claude API
+├── ai_solver.py                # Agentic loop solver: Claude tool-use for both games
 ├── debug_panel.py              # Admin debug panel
 ├── requirements.txt
-├── .env                        # ANTHROPIC_API_KEY (not committed)
+├── .env.local                  # ANTHROPIC_API_KEY + ADMIN_PASSWORD (not committed)
+├── .gitignore
 │
 ├── .streamlit/
 │   └── config.toml             # Black-and-green hacker theme
 │
 ├── assets/
 │   ├── design_doc.md           # System design: modes, data shapes, module responsibilities
-│   └── diagram.md              # Mermaid architecture diagram
+│   └── architecture.mmd        # Mermaid architecture diagram (paste into mermaid.live)
 │
 ├── knowledge_base/
 │   ├── binary_search.md        # Optimal number guessing strategy
@@ -328,6 +322,7 @@ ai110-final-project/
 ## Requirements
 
 - Python 3.11+
-- `ANTHROPIC_API_KEY` for AI Solver and hint features (games work without it)
+- `ANTHROPIC_API_KEY` in `.env.local` for AI Solver and hint features (games work without it)
+- `ADMIN_PASSWORD` in `.env.local` for admin panel access
 - No external server, no database
 - Internet connection required for Claude API calls and Google Fonts (terminal theme)
