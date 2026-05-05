@@ -1,0 +1,61 @@
+flowchart TD
+    User(["👤 User"])
+
+    subgraph Streamlit["Streamlit App — app.py"]
+        direction TB
+        Sidebar["Sidebar Nav\n(Number Guesser / Code Breaker\n/ AI Solver / Admin Panel)"]
+        NG["render_number_guesser()"]
+        CB["render_codebreaker()"]
+        AIS["render_ai_solver()"]
+        Admin["render_admin_panel()"]
+    end
+
+    subgraph PureLogic["Pure Game Logic"]
+        LU["logic_utils.py\ncheck_guess · update_score\nbuild_guess_record"]
+        CL["codebreaker_logic.py\nevaluate_guess · feedback_symbols\ncodebreaker_score"]
+    end
+
+    subgraph RAG["RAG Pipeline — ai_hints.py"]
+        direction TB
+        KB[("knowledge_base/\nbinary_search.md\nmastermind_theory.md\nscoring_strategy.md")]
+        Chunk["Chunk Documents\n~500 chars each"]
+        TFIDF["TF-IDF Vectorize\n(pure Python, no deps)"]
+        Sim["Cosine Similarity\nRetrieve Top-3 Chunks"]
+        HintLLM["Claude Haiku\nGenerate Hint\n(game state + context)"]
+    end
+
+    subgraph AgentLoop["Agentic Loop — ai_solver.py"]
+        direction TB
+        AgentLLM["Claude Haiku\nReasoning Step"]
+        T1["Tool: submit_guess\ncheck_guess()"]
+        T2["Tool: submit_code\nevaluate_guess()"]
+        T3["Tool: get_history\nreturn history list"]
+        AgentLLM -->|"tool_use: submit_guess"| T1
+        AgentLLM -->|"tool_use: submit_code"| T2
+        AgentLLM -->|"tool_use: get_history"| T3
+        T1 -->|"'correct' / 'too_high' / 'too_low'"| AgentLLM
+        T2 -->|"exact=N, close=M, symbols"| AgentLLM
+        T3 -->|"history JSON"| AgentLLM
+    end
+
+    User -->|navigates| Sidebar
+    Sidebar --> NG & CB & AIS & Admin
+
+    NG --> LU
+    CB --> CL
+
+    NG -->|"REQUEST HINT button\n(after ≥1 guess)"| RAG
+    CB -->|"REQUEST HINT button\n(after ≥1 guess)"| RAG
+
+    KB --> Chunk --> TFIDF --> Sim --> HintLLM
+    HintLLM -->|"hint text → ng_hint / cb_hint"| NG & CB
+
+    AIS -->|"RUN AI SOLVER button\nselect game + difficulty"| AgentLoop
+    AgentLoop -->|"step-event list\n(thoughts · tool calls · results · done)"| AIS
+    AIS -->|"renders execution log"| User
+
+    style RAG fill:#d4edda,stroke:#28a745,color:#155724
+    style AgentLoop fill:#d6d8f7,stroke:#3344cc,color:#1a237e
+    style Streamlit fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style PureLogic fill:#fff3cd,stroke:#cc8800,color:#5d3a00
+    style KB fill:#a8d5a2,stroke:#2e7d32,color:#1b5e20
